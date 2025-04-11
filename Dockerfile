@@ -1,4 +1,3 @@
-# front-new\Dockerfile
 # Etapa de construcción para el frontend
 FROM node:20-alpine AS builder
 
@@ -13,11 +12,11 @@ RUN npm install
 # Copiar el resto de los archivos
 COPY . .
 
-# Agregar esta línea para recibir el argumento
-ARG NEXT_PUBLIC_API_URL=http://100.26.212.136:3000
+# Recibir la variable como ARG
+ARG NEXT_PUBLIC_API_URL=http://localhost:3000
 
 # Configurar variables de entorno para el build
-ENV NEXT_PUBLIC_API_URL=http://100.26.212.136:3000
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_ENV=production
 
 # Construir la aplicación
@@ -35,9 +34,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # Configurar variables de entorno para producción
-ENV NEXT_PUBLIC_API_URL=http://100.26.212.136:3000
+ARG NEXT_PUBLIC_API_URL=http://localhost:3000
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=3000
 
 EXPOSE 3000
 

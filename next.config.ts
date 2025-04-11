@@ -21,12 +21,7 @@ const nextConfig = {
     ],
   },
   output: 'standalone',
-  experimental: {
-    serverActions: {
-      allowedOrigins: ['localhost:3001'],
-      bodySizeLimit: '2mb'
-    }
-  }
+
 };
 
 module.exports = nextConfig;

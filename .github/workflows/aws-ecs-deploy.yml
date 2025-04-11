@@ -1,16 +1,22 @@
-name: Deploy to Amazon ECS
+name: Deploy Frontend to Amazon ECS
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      backend_ip:
+        description: 'Backend API URL'
+        required: true
+        default: 'http://localhost:3000'
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: carlos-shop-frontend
-  ECS_SERVICE: carlosfront-service
+  ECR_REPOSITORY: carlos-shop-front
+  ECS_SERVICE: servicio-carlos-shop-frontend
   ECS_CLUSTER: carlos-shop-frontend
-  ECS_TASK_DEFINITION: carlos-shop-frontend-task
-  CONTAINER_NAME: carlos-shop-container-front
+  ECS_TASK_DEFINITION: tarea-frontend-carlos-shop
+  CONTAINER_NAME: contenedor-frontend-carlos-shop
 
 jobs:
   deploy:
@@ -31,15 +37,31 @@ jobs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+      
+    # Determinar la API URL
+    - name: Set API URL
+      id: set-api-url
+      run: |
+        # Si el workflow fue disparado por workflow_dispatch, usar la URL proporcionada
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          API_URL="${{ github.event.inputs.backend_ip }}"
+        else
+          # Valor de fallback para builds manuales o directos
+          API_URL="http://100.26.212.136:3000"
+        fi
+        
+        echo "Using API URL: $API_URL"
+        echo "api_url=$API_URL" >> $GITHUB_OUTPUT
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: 588738568763.dkr.ecr.us-east-1.amazonaws.com
         IMAGE_TAG: ${{ github.sha }}
+        NEXT_PUBLIC_API_URL: ${{ steps.set-api-url.outputs.api_url }}
       run: |
-        # Construir imagen de Docker
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        # Construir con el arg NEXT_PUBLIC_API_URL
+        docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
         
         # Subir la imagen a ECR
@@ -57,18 +79,21 @@ jobs:
 
     - name: Remove unsupported fields from task definition
       run: |
-        # Usar jq para eliminar el campo enableFaultInjection si existe
-        jq 'del(.enableFaultInjection)' task-definition.json > cleaned-task-definition.json
+        # Usar jq para eliminar campos no soportados
+        jq 'del(.enableFaultInjection) | del(.status) | del(.compatibilities) | del(.taskDefinitionArn) | del(.requiresAttributes) | del(.revision)' task-definition.json > cleaned-task-definition.json
         mv cleaned-task-definition.json task-definition.json
         cat task-definition.json
 
-    - name: Fill in the new image ID in the Amazon ECS task definition
+    # Actualizar la imagen y las variables de entorno en la task definition
+    - name: Fill in the new image ID and environment variables
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition.json
         container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
+        environment-variables: |
+          NEXT_PUBLIC_API_URL=${{ steps.set-api-url.outputs.api_url }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
