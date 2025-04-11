@@ -17,7 +17,9 @@ ARG NEXT_PUBLIC_API_URL=http://localhost:3000
 
 # Configurar variables de entorno para el build
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-ENV NODE_ENV=production
+
+# Mostrar el valor para debug
+RUN echo "Building with NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}"
 
 # Construir la aplicación
 RUN npm run build
@@ -34,10 +36,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # Configurar variables de entorno para producción
-ARG NEXT_PUBLIC_API_URL=http://localhost:3000
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_ENV=production
 ENV PORT=3000
+
+# Ya no definimos NEXT_PUBLIC_API_URL aquí, debe estar incrustado en el build
 
 EXPOSE 3000
 

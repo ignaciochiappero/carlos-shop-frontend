@@ -52,16 +52,25 @@ jobs:
         
         echo "Using API URL: $API_URL"
         echo "api_url=$API_URL" >> $GITHUB_OUTPUT
+    
+    # Añadimos paso de debug para verificar la URL
+    - name: Debug API URL
+      run: |
+        echo "API URL being used: ${{ steps.set-api-url.outputs.api_url }}"
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: 588738568763.dkr.ecr.us-east-1.amazonaws.com
         IMAGE_TAG: ${{ github.sha }}
-        NEXT_PUBLIC_API_URL: ${{ steps.set-api-url.outputs.api_url }}
       run: |
+        # Mostrar la URL de la API para debugging
+        echo "Building with NEXT_PUBLIC_API_URL=${{ steps.set-api-url.outputs.api_url }}"
+        
         # Construir con el arg NEXT_PUBLIC_API_URL
-        docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build \
+          --build-arg NEXT_PUBLIC_API_URL=${{ steps.set-api-url.outputs.api_url }} \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
         
         # Subir la imagen a ECR
@@ -84,16 +93,14 @@ jobs:
         mv cleaned-task-definition.json task-definition.json
         cat task-definition.json
 
-    # Actualizar la imagen y las variables de entorno en la task definition
-    - name: Fill in the new image ID and environment variables
+    # Simplemente actualizar la imagen en la task definition, no necesitamos añadir variables de entorno
+    - name: Fill in the new image ID
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition.json
         container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
-        environment-variables: |
-          NEXT_PUBLIC_API_URL=${{ steps.set-api-url.outputs.api_url }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
