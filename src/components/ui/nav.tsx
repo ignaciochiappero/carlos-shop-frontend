@@ -85,7 +85,6 @@ export function Nav() {
             >
               Products
             </Link>
-          
 
             <Link
               href="/about"
@@ -114,12 +113,6 @@ export function Nav() {
               </Link>
             )}
             <div className="h-6 border-l border-gray-300"></div>
-            <Link
-              href={isLoggedIn ? "/profile" : "/login"}
-              className="p-1 text-gray-600 hover:text-indigo-600 relative"
-            >
-              <User className="h-5 w-5" />
-            </Link>
             <Link
               href="/wishlist"
               className="p-1 text-gray-600 hover:text-indigo-600 relative"
