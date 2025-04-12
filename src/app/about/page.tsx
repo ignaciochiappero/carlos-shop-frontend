@@ -67,12 +67,12 @@ export default function AboutPage() {
       <div className="mb-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
         <div className="bg-white shadow rounded-lg p-8">
-          <p className="text-xl text-center italic mb-6">
+          <p className="text-xl text-center italic mb-6 text-black">
             "To sell items so weird that they circle back around to useful, but
             not quite."
           </p>
 
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-black">
             <p className="text-lg">
               We believe that in a world full of normal stores selling normal
               things, someone needs to be the weird one. Carlos volunteered.
