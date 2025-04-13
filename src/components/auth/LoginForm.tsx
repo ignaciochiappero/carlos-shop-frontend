@@ -1,3 +1,6 @@
+
+//front-new\src\components\auth\LoginForm.tsx
+
 "use client";
 
 import { useState, Suspense } from "react";
@@ -9,6 +12,7 @@ import Link from "next/link";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/lib/auth";
 import { LoginCredentials } from "@/types/user";
+import { useNavbar } from "@/context/NavbarContext"; // Importar el contexto de navbar
 
 const schema = yup.object({
   email: yup
@@ -28,6 +32,7 @@ function LoginFormContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setUser, setAccessToken } = useAuthStore();
+  const { refreshNavbar } = useNavbar(); // Usar el contexto de navbar
 
   const {
     register,
@@ -50,6 +55,9 @@ function LoginFormContent() {
 
       // Store token in localStorage
       localStorage.setItem("access_token", response.access_token);
+
+      // Actualizar la navbar - Este es el cambio importante
+      refreshNavbar();
 
       // Get the redirect URL from query parameters or default to dashboard
       const redirect = searchParams.get("redirect") || "/dashboard";

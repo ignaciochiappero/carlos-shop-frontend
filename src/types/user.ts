@@ -1,13 +1,15 @@
+//front-new\src\types\user.ts
+
 export type Role = 'ADMIN' | 'USER';
 
 export interface User {
   id: string;
   email: string;
   userName: string;
-  cognitoId: string;
+  cognitoId?: string;
   role: Role;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface LoginCredentials {
