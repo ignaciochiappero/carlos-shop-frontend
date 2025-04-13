@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { Trash2, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { state: cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const router = useRouter();
 
   if (cart.items.length === 0) {
     return (
@@ -140,6 +142,7 @@ export default function CartPage() {
             <div className="mt-6">
               <button
                 type="button"
+                onClick={() => router.push("/checkout")}
                 className="w-full bg-indigo-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Checkout
