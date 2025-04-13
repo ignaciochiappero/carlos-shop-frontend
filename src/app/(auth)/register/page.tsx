@@ -1,3 +1,5 @@
+//front-new\src\app\(auth)\register\page.tsx
+
 import RegisterForm from '@/components/auth/RegisterForm';
 import Link from 'next/link';
 

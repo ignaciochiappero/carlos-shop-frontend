@@ -202,14 +202,7 @@ export function Nav() {
                       Profile
                     </Link>
                     
-                    <Link 
-                      href="/profile"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors duration-150"
-                      onClick={() => closeDropdown()}
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Settings
-                    </Link>
+
                     
                     <hr className="my-1 border-gray-200" />
                     
