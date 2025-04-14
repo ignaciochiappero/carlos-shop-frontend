@@ -1,3 +1,5 @@
+//front-new\src\app\(auth)\confirm\page.tsx
+
 "use client";
 import React, { Suspense } from "react";
 import ConfirmForm from "@/components/auth/ConfirmForm";

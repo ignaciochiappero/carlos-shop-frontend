@@ -1,14 +1,18 @@
-//front-new\src\app\products\page.tsx
-'use client';
-import { useEffect, useState } from 'react';
-import { productsApi } from '@/lib/api';
-import ProductList from '@/components/products/ProductList';
-import Link from 'next/link';
-import { Product } from '@/types/product';
+"use client";
+import { useEffect, useState } from "react";
+import { productsApi } from "@/lib/api";
+import ProductList from "@/components/products/ProductList";
+import Link from "next/link";
+import { Product } from "@/types/product";
+import { useAuthStore, hasRole } from "@/lib/auth";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuthStore();
+
+  // Check if user is admin using string literal since Role is a type, not an enum
+  const isAdmin = hasRole("ADMIN");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -16,7 +20,7 @@ export default function ProductsPage() {
         const data = await productsApi.getAll();
         setProducts(data);
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
         setProducts([]); // Usar array vacío si hay error
       } finally {
         setLoading(false);
@@ -38,12 +42,15 @@ export default function ProductsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-        <Link
-          href="/products/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-        >
-          Add New Product
-        </Link>
+
+        {isAdmin && (
+          <Link
+            href="/products/new"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+          >
+            Add New Product
+          </Link>
+        )}
       </div>
       <ProductList initialProducts={products} />
     </div>

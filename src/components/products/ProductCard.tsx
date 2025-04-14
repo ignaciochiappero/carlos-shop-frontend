@@ -17,6 +17,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     addToCart({
       id: product.id,
       name: product.name,
+      description: product.description,
       price: product.price,
       image: product.image || "/placeholder-image.png",
     });
@@ -53,6 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="mt-4 flex items-center justify-between">
         <div>
           <h3 className="text-sm text-gray-700">{product.name}</h3>
+          <p className="mt-1 text-sm text-gray-500">{product.description}</p>
           <p className="mt-1 text-sm font-medium text-gray-900">
             ${product.price.toFixed(2)}
           </p>

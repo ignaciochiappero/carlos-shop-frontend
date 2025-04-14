@@ -5,6 +5,7 @@ import "./globals.css";
 import { Nav } from "@/components/ui/nav";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { NavbarProvider } from "@/context/NavbarContext";
 
 
 export const metadata: Metadata = {
@@ -23,7 +24,11 @@ export default function RootLayout({
         <CartProvider>
           <WishlistProvider>
             <div className="flex flex-col min-h-screen">
-              <Nav />
+              
+              <NavbarProvider>
+                <Nav />
+              </NavbarProvider>
+              
               <main className="flex-grow">{children}</main>
               <footer className="bg-gray-800 text-white py-8">
                 <div className="container mx-auto text-center">
