@@ -1,7 +1,6 @@
 
 //front-new\src\components\auth\LoginForm.tsx
 
-
 "use client";
 
 import { useState, Suspense } from "react";
@@ -89,7 +88,14 @@ function LoginFormContent() {
     } catch (err: any) {
       console.error("Login error details:", err);
       
-      // Manejar diferentes tipos de errores basados en el código de error o mensaje
+      // Siempre muestra "Incorrect email or password" para cualquier error de autenticación
+      // Esto es más amigable para el usuario y no revela detalles específicos del error
+      setError({
+        message: "Incorrect email or password. Please check your credentials and try again.",
+        type: "error"
+      });
+      
+      /* Original error handling logic - commented out
       if (err.response) {
         const statusCode = err.response.status;
         const errorMessage = err.response.data?.message || "";
@@ -136,6 +142,7 @@ function LoginFormContent() {
           type: "error"
         });
       }
+      */
     } finally {
       setIsLoading(false);
     }

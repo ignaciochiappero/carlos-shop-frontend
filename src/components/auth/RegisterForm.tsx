@@ -162,10 +162,10 @@ export default function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white p-10 rounded-md shadow-md">
       {error && <AlertMessage message={error.message} type={error.type} />}
 
-      <div>
+      <div >
         <label
           htmlFor="userName"
           className="block text-sm font-medium text-gray-700"

@@ -1,5 +1,3 @@
-//front-new\src\components\auth\ConfirmForm.tsx
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -78,42 +76,39 @@ export default function ConfirmForm({ email }: ConfirmFormProps) {
     } catch (err: any) {
       console.error("Confirmation error details:", err);
       
+      // Mensaje de error por defecto más amigable
+      let errorMessage = {
+        text: "Invalid confirmation code. Please check and try again.",
+        type: 'error' as 'error' | 'warning' | 'info' | 'success'
+      };
+      
+      // Intentar obtener un mensaje más específico si es posible
       if (err.response) {
         const statusCode = err.response.status;
-        const errorMessage = err.response.data?.message || "";
+        const errResponseMessage = err.response.data?.message || "";
 
-        if (errorMessage.includes("expired") || errorMessage.includes("timeout")) {
-          setMessage({
+        if (errResponseMessage.includes("expired") || errResponseMessage.includes("timeout")) {
+          errorMessage = {
             text: "This confirmation code has expired. Please request a new code.",
             type: "warning"
-          });
-        } else if (errorMessage.includes("invalid") || errorMessage.includes("incorrect") || statusCode === 400) {
-          setMessage({
-            text: "Invalid confirmation code. Please check and try again.",
-            type: "error"
-          });
-        } else if (errorMessage.includes("already confirmed") || statusCode === 409) {
-          setMessage({
+          };
+        } else if (errResponseMessage.includes("invalid") || errResponseMessage.includes("incorrect") || statusCode === 400) {
+          // Mantener el mensaje por defecto
+        } else if (errResponseMessage.includes("already confirmed") || statusCode === 409) {
+          errorMessage = {
             text: "This email is already confirmed. Please proceed to login.",
             type: "info"
-          });
-        } else {
-          setMessage({
-            text: errorMessage || "Failed to confirm email. Please try again.",
-            type: "error"
-          });
+          };
         }
+        // No mostrar nunca errores internos del servidor al usuario
       } else if (err.request && !err.response) {
-        setMessage({
-          text: "Unable to connect to the server. Please check your internet connection and try again.",
+        errorMessage = {
+          text: "Unable to connect to the verification service. Please try again later.",
           type: "warning"
-        });
-      } else {
-        setMessage({
-          text: "An unexpected error occurred. Please try again later.",
-          type: "error"
-        });
+        };
       }
+      
+      setMessage(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -137,42 +132,42 @@ export default function ConfirmForm({ email }: ConfirmFormProps) {
     } catch (err: any) {
       console.error("Resend code error details:", err);
       
+      // Mensaje de error por defecto más amigable
+      let errorMessage = {
+        text: "We couldn't send a new code. Please try again later.",
+        type: 'warning' as 'error' | 'warning' | 'info' | 'success'
+      };
+      
+      // Intentar obtener un mensaje más específico si es posible
       if (err.response) {
         const statusCode = err.response.status;
-        const errorMessage = err.response.data?.message || "";
+        const errResponseMessage = err.response.data?.message || "";
 
-        if (errorMessage.includes("already confirmed") || statusCode === 409) {
-          setMessage({
+        if (errResponseMessage.includes("already confirmed") || statusCode === 409) {
+          errorMessage = {
             text: "This email is already confirmed. Please proceed to login.",
             type: "info"
-          });
-        } else if (errorMessage.includes("too many") || errorMessage.includes("limit") || statusCode === 429) {
-          setMessage({
+          };
+        } else if (errResponseMessage.includes("too many") || errResponseMessage.includes("limit") || statusCode === 429) {
+          errorMessage = {
             text: "Too many code requests. Please wait before requesting a new code.",
             type: "warning"
-          });
-        } else if (errorMessage.includes("not found") || statusCode === 404) {
-          setMessage({
+          };
+        } else if (errResponseMessage.includes("not found") || statusCode === 404) {
+          errorMessage = {
             text: "Email not found. Please register first.",
             type: "error"
-          });
-        } else {
-          setMessage({
-            text: errorMessage || "Failed to resend code. Please try again later.",
-            type: "error"
-          });
+          };
         }
+        // No mostrar nunca errores internos del servidor al usuario
       } else if (err.request && !err.response) {
-        setMessage({
-          text: "Unable to connect to the server. Please check your internet connection and try again.",
+        errorMessage = {
+          text: "Unable to connect to the verification service. Please try again later.",
           type: "warning"
-        });
-      } else {
-        setMessage({
-          text: "An unexpected error occurred. Please try again later.",
-          type: "error"
-        });
+        };
       }
+      
+      setMessage(errorMessage);
     } finally {
       setIsResending(false);
     }

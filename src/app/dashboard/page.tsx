@@ -76,7 +76,7 @@ export default function DashboardPage() {
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Products</h2>
         <ProductList 
-          initialProducts={products.slice(0, 6)} 
+          initialProducts={products.slice(0, 8)} 
           showActions={false}
         />
       </div>
